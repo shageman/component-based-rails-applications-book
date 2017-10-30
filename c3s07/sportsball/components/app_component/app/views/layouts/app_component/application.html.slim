@@ -1,0 +1,41 @@
+
+|<!DOCTYPE html>
+html
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+
+    title Sportsball App
+
+    = javascript_include_tag "app_component/application"
+    = stylesheet_link_tag    "app_component/application", media: "all"
+
+    = csrf_meta_tags
+
+  header
+    .contain-to-grid.sticky
+      nav.top-bar data-topbar="" role="navigation"
+        ul.title-area
+          li.name
+            h1
+              = link_to root_path do
+
+                = image_tag "app_component/logo.png", width: "25px"
+
+                | Predictor
+
+          li.toggle-topbar.menu-icon
+            a href="#"
+              span Menu
+
+        section.top-bar-section
+          ul.left
+            li =link_to "Teams", teams_path
+            li =link_to "Games", games_path
+            li =link_to "Predictions", new_prediction_path
+
+  main
+    .row
+      .small-12.columns
+        = yield
+

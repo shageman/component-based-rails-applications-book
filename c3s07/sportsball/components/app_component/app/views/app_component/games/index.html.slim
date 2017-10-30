@@ -1,0 +1,35 @@
+
+h1 Games
+
+table
+  thead
+    tr
+      th Date
+      th Location
+      th First team
+      th Second team
+      th
+      th
+      th
+
+  tbody
+    - @games.each do |game|
+      tr
+        td = game.date
+        td = game.location
+        - if game.winning_team == 1
+          td
+            strong = game.first_team.name
+          td = game.second_team.name
+        - else
+          td = game.first_team.name
+          td
+            strong = game.second_team.name
+        td = link_to "Show", game, class: "button tiny"
+        td = link_to "Edit", edit_game_path(game), class: "button tiny"
+        td = link_to "Destroy", game, data: {:confirm => "Are you sure?"}, :method => :delete, class: "button tiny alert"
+
+br
+
+= link_to "New Game", new_game_path, class: "button"
+

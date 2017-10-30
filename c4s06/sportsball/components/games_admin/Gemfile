@@ -1,0 +1,13 @@
+
+source "http://geminabox:9292"
+
+gemspec
+
+path ".." do
+  gem "games"
+  gem "teams"
+  gem "web_ui"
+end
+
+gem "trueskill", git: "https://github.com/benjaminleesmith/trueskill", ref: "e404f45af5b3fb86982881ce064a9c764cc6a901"
+

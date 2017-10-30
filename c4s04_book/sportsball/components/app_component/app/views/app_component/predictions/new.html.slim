@@ -1,0 +1,13 @@
+
+h1 Predictions
+
+= form_tag prediction_path, method: "post" do |f|
+  .field
+    = label_tag :first_team_id
+    = collection_select(:first_team, :id, @teams, :id, :name)
+
+  .field
+    = label_tag :second_team_id
+    = collection_select(:second_team, :id, @teams, :id, :name)
+  .actions = submit_tag "What is it going to be?", class: "button"
+

@@ -1,0 +1,16 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: starefossen/ruby-node
+    tag: '2-8'
+
+inputs:
+- name: generator_scripts_repo
+- name: code_input
+
+outputs:
+- name: code_output
+
+run:
+  path: generator_scripts_repo/generator_scripts/ci/transform_code.sh

@@ -1,0 +1,20 @@
+source "http://geminabox:9292/"
+
+
+
+
+gemspec
+path ".." do
+  gem "teams"
+end
+
+
+
+
+
+
+
+
+
+
+

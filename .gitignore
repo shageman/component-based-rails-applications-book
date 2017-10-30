@@ -1,0 +1,4 @@
+.minio.sys
+_cache
+docker/keys
+docker/minio/data

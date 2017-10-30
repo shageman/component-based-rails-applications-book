@@ -1,0 +1,15 @@
+
+development: &DEVELOPMENT
+  adapter: postgresql
+  database: sportsball_app_component_development
+  host: concourse-db
+  username: concourse_user
+  password: concourse_pass
+  pool: 5
+  timeout: 5000
+
+test: &TEST
+  <<: *DEVELOPMENT
+  database: sportsball_app_component_test
+  min_messages: warning
+

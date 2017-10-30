@@ -1,0 +1,21 @@
+
+h1 Teams
+
+table
+  thead
+    tr
+      th Name
+      th
+      th
+
+  tbody
+    - @teams.each do |team|
+      tr
+        td = team.name
+        td = link_to "Edit", edit_team_path(team), class: "button tiny"
+        td = link_to "Destroy", team, data: {:confirm => "Are you sure?"}, :method => :delete, class: "button tiny alert"
+
+br
+
+= link_to "New Team", new_team_path, class: "button"
+

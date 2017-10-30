@@ -1,0 +1,12 @@
+
+source "https://rubygems.org"
+
+# Specify your gems dependencies in predict_game.gemspec
+gemspec
+
+path ".." do
+  gem "predictor"
+  gem "publisher"
+  gem "teams_store"
+  gem "games"
+end

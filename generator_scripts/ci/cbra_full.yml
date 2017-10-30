@@ -1,0 +1,897 @@
+resources:
+- name: c2s01_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c2s01-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c2s02_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c2s02-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c2s03_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c2s03-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c3s01_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c3s01-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c3s02_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c3s02-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c3s03_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c3s03-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c3s04_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c3s04-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+#- name: c3s05_code
+#  type: s3
+#  source:
+#    endpoint: http://minio:9000
+#    bucket: releases
+#    regexp: c3s05-(.*)\.tgz
+#    access_key_id: minio
+#    secret_access_key: minio123
+#- name: c3s06_code
+#  type: s3
+#  source:
+#    endpoint: http://minio:9000
+#    bucket: releases
+#    regexp: c3s06-(.*)\.tgz
+#    access_key_id: minio
+#    secret_access_key: minio123
+- name: c3s07_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c3s07-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s02_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s02-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s04_1_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s04_1-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s04_2_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s04_2-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s04_3_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s04_3-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s04_4_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s04_4-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s05_1_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s05_1-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s05_2_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s05_2-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c4s06_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c4s06-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c6s01_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c6s01-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: c6s02_code
+  type: s3
+  source:
+    endpoint: http://minio:9000
+    bucket: releases
+    regexp: c6s02-(.*)\.tgz
+    access_key_id: minio
+    secret_access_key: minio123
+- name: generator_scripts_repo
+  type: git
+  source:
+    uri: https://github.com/shageman/component-based-rails-applications-book.git
+    branch: master
+    depth: 1
+  check_every: 10s
+
+jobs:
+- name: c2s01
+  serial_groups: [transform]
+  plan:
+  - get: generator_scripts_repo
+#    trigger: true
+  - task: c2s01_task
+    file: generator_scripts_repo/generator_scripts/ci/generate_code.yml
+    output_mapping:
+      code_output: c2s01_code
+    params:
+      CHAPTER: c2s01
+  - put: c2s01_code
+    params:
+      file: "c2s01_code/c2s01-*.tgz"
+      acl: public-read
+
+- name: c2s01_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c2s01_code
+    passed: [c2s01]
+    trigger: true
+  - task: c2s01_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_by_spinning_up_server.yml
+    input_mapping:
+      app_code: c2s01_code
+    params:
+      CHAPTER: c2s01
+
+- name: c2s02
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c2s01_code
+      passed: [c2s01]
+      trigger: true
+  - task: c2s02_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c2s01_code
+    output_mapping:
+      code_output: c2s02_code
+    params:
+      PREV_CHAPTER: c2s01
+      CHAPTER: c2s02
+  - put: c2s02_code
+    params:
+      file: "c2s02_code/c2s02-*.tgz"
+      acl: public-read
+
+- name: c2s02_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c2s02_code
+    passed: [c2s02]
+    trigger: true
+  - task: c2s02_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_by_spinning_up_server.yml
+    input_mapping:
+      app_code: c2s02_code
+    params:
+      CHAPTER: c2s02
+
+- name: c2s03
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c2s02_code
+      passed: [c2s02]
+      trigger: true
+  - task: c2s03_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c2s02_code
+    output_mapping:
+      code_output: c2s03_code
+    params:
+      PREV_CHAPTER: c2s02
+      CHAPTER: c2s03
+  - put: c2s03_code
+    params:
+      file: "c2s03_code/c2s03-*.tgz"
+      acl: public-read
+
+- name: c2s03_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c2s03_code
+    passed: [c2s03]
+    trigger: true
+  - task: c2s03_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_by_spinning_up_server.yml
+    input_mapping:
+      app_code: c2s03_code
+    params:
+      CHAPTER: c2s03
+
+- name: c3s01
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c2s03_code
+      passed: [c2s03]
+      trigger: true
+  - task: c3s01_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c2s03_code
+    output_mapping:
+      code_output: c3s01_code
+    params:
+      PREV_CHAPTER: c2s03
+      CHAPTER: c3s01
+  - put: c3s01_code
+    params:
+      file: "c3s01_code/c3s01-*.tgz"
+      acl: public-read
+
+- name: c3s01_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c3s01_code
+    passed: [c3s01]
+    trigger: true
+  - task: c3s01_test_task
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: starefossen/ruby-node
+          tag: '2-8'
+      inputs:
+      - name: generator_scripts_repo
+      - name: c3s01_code
+      run:
+        path: generator_scripts_repo/generator_scripts/generators/c3s01_tests.sh
+
+- name: c3s02
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c3s01_code
+      passed: [c3s01]
+      trigger: true
+  - task: c3s02_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c3s01_code
+    output_mapping:
+      code_output: c3s02_code
+    params:
+      PREV_CHAPTER: c3s01
+      CHAPTER: c3s02
+  - put: c3s02_code
+    params:
+      file: "c3s02_code/c3s02-*.tgz"
+      acl: public-read
+
+- name: c3s02_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c3s02_code
+    passed: [c3s02]
+    trigger: true
+  - task: c3s02_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c3s02_code
+    params:
+      CHAPTER: c3s02
+
+- name: c3s03
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c3s02_code
+      passed: [c3s02]
+      trigger: true
+  - task: c3s03_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c3s02_code
+    output_mapping:
+      code_output: c3s03_code
+    params:
+      PREV_CHAPTER: c3s02
+      CHAPTER: c3s03
+  - put: c3s03_code
+    params:
+      file: "c3s03_code/c3s03-*.tgz"
+      acl: public-read
+
+- name: c3s03_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c3s03_code
+    passed: [c3s03]
+    trigger: true
+  - task: c3s03_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c3s03_code
+    params:
+      CHAPTER: c3s03
+
+- name: c3s04
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c3s03_code
+      passed: [c3s03]
+      trigger: true
+  - task: c3s04_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c3s03_code
+    output_mapping:
+      code_output: c3s04_code
+    params:
+      PREV_CHAPTER: c3s03
+      CHAPTER: c3s04
+  - put: c3s04_code
+    params:
+      file: "c3s04_code/c3s04-*.tgz"
+      acl: public-read
+
+- name: c3s04_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c3s04_code
+    passed: [c3s04]
+    trigger: true
+  - task: c3s04_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c3s04_code
+    params:
+      CHAPTER: c3s04
+
+#- name: c3s05
+#  serial_groups: [transform]
+#  plan:
+#  - aggregate:
+#    - get: generator_scripts_repo
+#    - get: c3s03_code
+#      passed: [c3s03]
+#      trigger: true
+#  - task: c3s05_task
+#    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+#    input_mapping:
+#      code_input: c3s03_code
+#    output_mapping:
+#      code_output: c3s05_code
+#    params:
+#      PREV_CHAPTER: c3s03
+#      CHAPTER: c3s05
+#  - put: c3s05_code
+#    params:
+#      file: "c3s05_code/c3s05-*.tgz"
+#      acl: public-read
+#
+#- name: c3s05_test
+#  serial_groups: [test]
+#  plan:
+#  - get: generator_scripts_repo
+#  - get: c3s05_code
+#    passed: [c3s05]
+#    trigger: true
+#  - task: c3s05_test_task
+#    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+#    input_mapping:
+#      app_code: c3s05_code
+#    params:
+#      CHAPTER: c3s05
+#
+#- name: c3s06
+#  serial_groups: [transform]
+#  plan:
+#  - aggregate:
+#    - get: generator_scripts_repo
+#    - get: c3s03_code
+#      passed: [c3s03]
+#      trigger: true
+#  - task: c3s06_task
+#    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+#    input_mapping:
+#      code_input: c3s03_code
+#    output_mapping:
+#      code_output: c3s06_code
+#    params:
+#      PREV_CHAPTER: c3s03
+#      CHAPTER: c3s06
+#  - put: c3s06_code
+#    params:
+#      file: "c3s06_code/c3s06-*.tgz"
+#      acl: public-read
+#
+#- name: c3s06_test
+#  serial_groups: [test]
+#  plan:
+#  - get: generator_scripts_repo
+#  - get: c3s06_code
+#    passed: [c3s06]
+#    trigger: true
+#  - task: c3s06_test_task
+#    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+#    input_mapping:
+#      app_code: c3s06_code
+#    params:
+#      CHAPTER: c3s06
+
+- name: c3s07
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c3s03_code
+      passed: [c3s03]
+      trigger: true
+  - task: c3s07_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c3s03_code
+    output_mapping:
+      code_output: c3s07_code
+    params:
+      PREV_CHAPTER: c3s03
+      CHAPTER: c3s07
+  - put: c3s07_code
+    params:
+      file: "c3s07_code/c3s07-*.tgz"
+      acl: public-read
+
+- name: c3s07_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c3s07_code
+    passed: [c3s07]
+    trigger: true
+  - task: c3s07_test_task
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: starefossen/ruby-node
+          tag: '2-8'
+      inputs:
+      - name: generator_scripts_repo
+      - name: c3s07_code
+      run:
+        path: generator_scripts_repo/generator_scripts/generators/c3s07_tests.sh
+
+- name: c4s02
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c3s03_code
+      passed: [c3s03]
+      trigger: true
+  - task: c4s02_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c3s03_code
+    output_mapping:
+      code_output: c4s02_code
+    params:
+      PREV_CHAPTER: c3s03
+      CHAPTER: c4s02
+  - put: c4s02_code
+    params:
+      file: "c4s02_code/c4s02-*.tgz"
+      acl: public-read
+
+- name: c4s02_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s02_code
+    passed: [c4s02]
+    trigger: true
+  - task: c4s02_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s02_code
+    params:
+      CHAPTER: c4s02
+
+- name: c4s04_1
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s02_code
+      passed: [c4s02]
+      trigger: true
+  - task: c4s04_1_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s02_code
+    output_mapping:
+      code_output: c4s04_1_code
+    params:
+      PREV_CHAPTER: c4s02
+      CHAPTER: c4s04_1
+  - put: c4s04_1_code
+    params:
+      file: "c4s04_1_code/c4s04_1-*.tgz"
+      acl: public-read
+
+- name: c4s04_1_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s04_1_code
+    passed: [c4s04_1]
+    trigger: true
+  - task: c4s04_1_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s04_1_code
+    params:
+      CHAPTER: c4s04_1
+
+- name: c4s04_2
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s04_1_code
+      passed: [c4s04_1]
+      trigger: true
+  - task: c4s04_2_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s04_1_code
+    output_mapping:
+      code_output: c4s04_2_code
+    params:
+      PREV_CHAPTER: c4s04_1
+      CHAPTER: c4s04_2
+  - put: c4s04_2_code
+    params:
+      file: "c4s04_2_code/c4s04_2-*.tgz"
+      acl: public-read
+
+- name: c4s04_2_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s04_2_code
+    passed: [c4s04_2]
+    trigger: true
+  - task: c4s04_2_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s04_2_code
+    params:
+      CHAPTER: c4s04_2
+
+- name: c4s04_3
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s04_2_code
+      passed: [c4s04_2]
+      trigger: true
+  - task: c4s04_3_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s04_2_code
+    output_mapping:
+      code_output: c4s04_3_code
+    params:
+      PREV_CHAPTER: c4s04_2
+      CHAPTER: c4s04_3
+  - put: c4s04_3_code
+    params:
+      file: "c4s04_3_code/c4s04_3-*.tgz"
+      acl: public-read
+
+- name: c4s04_3_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s04_3_code
+    passed: [c4s04_3]
+    trigger: true
+  - task: c4s04_3_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s04_3_code
+    params:
+      CHAPTER: c4s04_3
+
+- name: c4s04_4
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s04_3_code
+      passed: [c4s04_3]
+      trigger: true
+  - task: c4s04_4_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s04_3_code
+    output_mapping:
+      code_output: c4s04_4_code
+    params:
+      PREV_CHAPTER: c4s04_3
+      CHAPTER: c4s04_4
+  - put: c4s04_4_code
+    params:
+      file: "c4s04_4_code/c4s04_4-*.tgz"
+      acl: public-read
+
+- name: c4s04_4_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s04_4_code
+    passed: [c4s04_4]
+    trigger: true
+  - task: c4s04_4_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s04_4_code
+    params:
+      CHAPTER: c4s04_4
+
+- name: c4s05_1
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s04_4_code
+      passed: [c4s04_4]
+      trigger: true
+  - task: c4s05_1_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s04_4_code
+    output_mapping:
+      code_output: c4s05_1_code
+    params:
+      PREV_CHAPTER: c4s04_4
+      CHAPTER: c4s05_1
+  - put: c4s05_1_code
+    params:
+      file: "c4s05_1_code/c4s05_1-*.tgz"
+      acl: public-read
+
+- name: c4s05_1_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s05_1_code
+    passed: [c4s05_1]
+    trigger: true
+  - task: c4s05_1_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s05_1_code
+    params:
+      CHAPTER: c4s05_1
+
+- name: c4s05_2
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s05_1_code
+      passed: [c4s05_1]
+      trigger: true
+  - task: c4s05_2_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s05_1_code
+    output_mapping:
+      code_output: c4s05_2_code
+    params:
+      PREV_CHAPTER: c4s05_1
+      CHAPTER: c4s05_2
+  - put: c4s05_2_code
+    params:
+      file: "c4s05_2_code/c4s05_2-*.tgz"
+      acl: public-read
+
+- name: c4s05_2_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s05_2_code
+    passed: [c4s05_2]
+    trigger: true
+  - task: c4s05_2_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s05_2_code
+    params:
+      CHAPTER: c4s05_2
+
+- name: c4s06
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s05_2_code
+      passed: [c4s05_2]
+      trigger: true
+  - task: c4s06_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s05_2_code
+    output_mapping:
+      code_output: c4s06_code
+    params:
+      PREV_CHAPTER: c4s05_2
+      CHAPTER: c4s06
+  - put: c4s06_code
+    params:
+      file: "c4s06_code/c4s06-*.tgz"
+      acl: public-read
+
+- name: c4s06_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c4s06_code
+    passed: [c4s06]
+    trigger: true
+  - task: c4s06_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c4s06_code
+    params:
+      CHAPTER: c4s06
+
+- name: c6s01
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s06_code
+      passed: [c4s06]
+      trigger: true
+  - task: c6s01_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s06_code
+    output_mapping:
+      code_output: c6s01_code
+    params:
+      PREV_CHAPTER: c4s06
+      CHAPTER: c6s01
+  - put: c6s01_code
+    params:
+      file: "c6s01_code/c6s01-*.tgz"
+      acl: public-read
+
+- name: c6s01_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c6s01_code
+    passed: [c6s01]
+    trigger: true
+  - task: c6s01_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c6s01_code
+    params:
+      CHAPTER: c6s01
+
+- name: c6s02
+  serial_groups: [transform]
+  plan:
+  - aggregate:
+    - get: generator_scripts_repo
+    - get: c4s06_code
+      passed: [c4s06]
+      trigger: true
+  - task: c6s02_task
+    file: generator_scripts_repo/generator_scripts/ci/transform_code.yml
+    input_mapping:
+      code_input: c4s06_code
+    output_mapping:
+      code_output: c6s02_code
+    params:
+      PREV_CHAPTER: c4s06
+      CHAPTER: c6s02
+  - put: c6s02_code
+    params:
+      file: "c6s02_code/c6s02-*.tgz"
+      acl: public-read
+
+- name: c6s02_test
+  serial_groups: [test]
+  plan:
+  - get: generator_scripts_repo
+  - get: c6s02_code
+    passed: [c6s02]
+    trigger: true
+  - task: c6s02_test_task
+    file: generator_scripts_repo/generator_scripts/ci/test_with_build.yml
+    input_mapping:
+      app_code: c6s02_code
+    params:
+      CHAPTER: c6s02

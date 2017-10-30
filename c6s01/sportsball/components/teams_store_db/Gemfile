@@ -1,0 +1,9 @@
+
+source "https://rubygems.org"
+
+path ".." do
+  gem "teams"
+end
+
+gemspec
+

@@ -1,0 +1,7 @@
+.DS_Store
+.bundle
+coverage
+doc
+.yardoc
+*.gem
+.idea

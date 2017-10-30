@@ -1,0 +1,29 @@
+
+p#notice = notice
+
+p
+  strong Date:
+  = @game.date
+p
+  strong Location:
+  = @game.location
+p
+  strong First team:
+  = @game.first_team.name
+p
+  strong Second team:
+  = @game.second_team.name
+p
+  strong Winning team:
+  = @game.winning_team
+p
+  strong First team score:
+  = @game.first_team_score
+p
+  strong Second team score:
+  = @game.second_team_score
+
+= link_to "Edit", edit_game_path(@game), class: "button"
+|
+= link_to "Back", games_path, class: "button"
+

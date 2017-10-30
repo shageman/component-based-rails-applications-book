@@ -1,0 +1,40 @@
+
+|<!DOCTYPE html>
+html
+  head
+    meta charset="utf-8"
+    meta name="viewport" content="width=device-width, initial-scale=1.0"
+
+    title Sportsball App
+
+    = javascript_include_tag "web_ui/application"
+    = stylesheet_link_tag    "web_ui/application", media: "all"
+
+    = csrf_meta_tags
+
+  header
+    .contain-to-grid.sticky
+      nav.top-bar data-topbar="" role="navigation"
+        ul.title-area
+          li.name
+            h1
+              = link_to "/" do
+
+                = image_tag "web_ui/logo.png", width: "25px"
+
+                | Predictor
+
+          li.toggle-topbar.menu-icon
+            a href="#"
+              span Menu
+
+        section.top-bar-section
+          ul.left
+            - Rails.application.config.main_nav.each do |nav_entry|
+              li =link_to nav_entry[:name], nav_entry[:link].call
+
+  main
+    .row
+      .small-12.columns
+        = yield
+

@@ -1,0 +1,52 @@
+<%= form_with(model: game, local: true) do |form| %>
+  <% if game.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(game.errors.count, "error") %> prohibited this game from being saved:</h2>
+
+      <ul>
+      <% game.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :date %>
+    <%= form.datetime_select :date, id: :game_date %>
+  </div>
+
+  <div class="field">
+    <%= form.label :location %>
+    <%= form.text_field :location, id: :game_location %>
+  </div>
+
+  <div class="field">
+    <%= form.label :first_team_id %>
+    <%= form.number_field :first_team_id, id: :game_first_team_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :second_team_id %>
+    <%= form.number_field :second_team_id, id: :game_second_team_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :winning_team %>
+    <%= form.number_field :winning_team, id: :game_winning_team %>
+  </div>
+
+  <div class="field">
+    <%= form.label :first_team_score %>
+    <%= form.number_field :first_team_score, id: :game_first_team_score %>
+  </div>
+
+  <div class="field">
+    <%= form.label :second_team_score %>
+    <%= form.number_field :second_team_score, id: :game_second_team_score %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>

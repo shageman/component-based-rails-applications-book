@@ -1,0 +1,5 @@
+
+source "http://geminabox:9292"
+
+gemspec
+
