@@ -43,8 +43,7 @@ cp ./keys/web/tsa_host_key.pub ./keys/worker
 docker-compose up
 ~~~~~~~~
 
-This will start a [concourse]() (CI server), a [geminabox]() (gem server), and a [minio]() (S3 
-compatible server) 
+This will start a [concourse](https://concourse-ci.org/) (CI server), a [geminabox](http://tomlea.co.uk/posts/gem-in-a-box/) (gem server), and a [minio](https://www.minio.io/) (S3 compatible server) 
 
 ### Get the Pipeline Running
 In a different terminal
