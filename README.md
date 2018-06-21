@@ -1,4 +1,4 @@
-# Source Code to Component-Based Rails Applications by Stephan Hagemann
+# Source Code to _Component-Based Rails Applications_ by Stephan Hagemann
 
 This repository holds the source code used in my book on Component-based Rails Applications.
 
@@ -12,10 +12,9 @@ versions). Please check out the development section of this readme to get more i
 
 ## References
 
-* [The Book at Pearson](https://www.pearson
-.com/us/higher-education/program/Hagemann-Component-Based-Rails-Applications-Large-Domains-Under-Control/PGM1797138.html) 
-* [stephanhagemann.com](http://stephanhagemann.com) - the author's website
-* [cbra.info](http://www.cbra.info) - a collection of resource on Component-based Rails 
+* [The Book at Pearson](https://www.pearson.com/us/higher-education/program/Hagemann-Component-Based-Rails-Applications-Large-Domains-Under-Control/PGM1797138.html) 
+* [stephanhagemann.com](http://stephanhagemann.com) - The author's website
+* [cbra.info](http://www.cbra.info) - A collection of resource on Component-based Rails 
 
 ## Development - Getting Started
 
