@@ -1,3 +1,6 @@
+# In 2021, check out [Gradual Modularization with Rails](http://gradualmodularity.com) - a better way to achieve modularization within Rails applications
+
+
 # Source Code to _Component-Based Rails Applications_ by Stephan Hagemann
 
 This repository holds the source code used in my book on Component-based Rails Applications.
